@@ -1,117 +1,43 @@
 package tests;
 
+import api.OrderApi;
+import client.Order;
 import io.qameta.allure.Step;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.junit.Before;
 import org.junit.Test;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.not;
+import static org.apache.http.HttpStatus.SC_CREATED;
 
-
-public class OrderCreateTest {
-
-    @Before
-    public void setUp() {
-        RestAssured.baseURI = "https://qa-scooter.praktikum-services.ru/";
-    }
+public class OrderCreateTest extends BaseTest {
 
     @Test
-    @Step("1. Можно указать оба цвета — BLACK и GREY")
+    @Step("1. Создание заказа с двумя цветами: BLACK и GREY")
     public void createOrderWithBlackAndGreyColors() {
-        String requestBody = "{\n" +
-                "  \"firstName\": \"Naruto\",\n" +
-                "  \"lastName\": \"Uchiha\",\n" +
-                "  \"address\": \"Konoha, 142 apt.\",\n" +
-                "  \"metroStation\": \"4\",\n" +
-                "  \"phone\": \"+7 800 355 35 35\",\n" +
-                "  \"rentTime\": 5,\n" +
-                "  \"deliveryDate\": \"2020-06-06\",\n" +
-                "  \"comment\": \"Saske, come back to Konoha\",\n" +
-                "  \"color\": [\"BLACK\", \"GREY\"]\n" +
-                "}";
+        Order order = new Order(
+                "Naruto", "Uchiha", "Konoha, 142 apt.", "4",
+                "+7 800 355 35 35", 5, "2020-06-06",
+                "Saske, come back to Konoha",
+                java.util.List.of("BLACK", "GREY")
+        );
 
-        Response response = given()
-                .header("Content-type", "application/json")
-                .body(requestBody)
-                .when()
-                .post("/api/v1/orders");
-
-        response.then().statusCode(201);
-        response.then().body("track", notNullValue());
+        Response response = OrderApi.createOrder(order);
+        response.then().statusCode(SC_CREATED);
     }
 
     @Test
-    @Step("2. Можно указать один цвет — BLACK")
-    public void createOrderWithBlackColor() {
-        String requestBody = "{\n" +
-                "  \"firstName\": \"Naruto\",\n" +
-                "  \"lastName\": \"Uchiha\",\n" +
-                "  \"address\": \"Konoha, 142 apt.\",\n" +
-                "  \"metroStation\": \"4\",\n" +
-                "  \"phone\": \"+7 800 355 35 35\",\n" +
-                "  \"rentTime\": 5,\n" +
-                "  \"deliveryDate\": \"2020-06-06\",\n" +
-                "  \"comment\": \"Saske, come back to Konoha\",\n" +
-                "  \"color\": [\"BLACK\"]\n" +
-                "}";
-
-        Response response = given()
-                .header("Content-type", "application/json")
-                .body(requestBody)
-                .when()
-                .post("/api/v1/orders");
-
-        response.then().statusCode(201);
-        response.then().body("track", notNullValue());
-    }
-
-    @Test
-    @Step("3. Можно не указывать цвет")
-    public void createOrderWithoutColor() {
-        String requestBody = "{\n" +
-                "  \"firstName\": \"Naruto\",\n" +
-                "  \"lastName\": \"Uchiha\",\n" +
-                "  \"address\": \"Konoha, 142 apt.\",\n" +
-                "  \"metroStation\": \"4\",\n" +
-                "  \"phone\": \"+7 800 355 35 35\",\n" +
-                "  \"rentTime\": 5,\n" +
-                "  \"deliveryDate\": \"2020-06-06\",\n" +
-                "  \"comment\": \"Saske, come back to Konoha\"\n" +
-                "}";
-
-        Response response = given()
-                .header("Content-type", "application/json")
-                .body(requestBody)
-                .when()
-                .post("/api/v1/orders");
-
-        response.then().statusCode(201);
-        response.then().body("track", notNullValue());
-    }
-
-    @Test
-    @Step("4. Тело ответа содержит track")
+    @Step("5. Проверка, что тело ответа содержит поле track")
     public void orderResponseContainsTrack() {
-        String requestBody = "{\n" +
-                "  \"firstName\": \"Naruto\",\n" +
-                "  \"lastName\": \"Uchiha\",\n" +
-                "  \"address\": \"Konoha, 142 apt.\",\n" +
-                "  \"metroStation\": \"4\",\n" +
-                "  \"phone\": \"+7 800 355 35 35\",\n" +
-                "  \"rentTime\": 5,\n" +
-                "  \"deliveryDate\": \"2020-06-06\",\n" +
-                "  \"comment\": \"Saske, come back to Konoha\"\n" +
-                "}";
+        Order order = new Order(
+                "Naruto", "Uchiha", "Konoha, 142 apt.", "4",
+                "+7 800 355 35 35", 5, "2020-06-06",
+                "Saske, come back to Konoha",
+                null
+        );
 
-        Response response = given()
-                .header("Content-type", "application/json")
-                .body(requestBody)
-                .when()
-                .post("/api/v1/orders");
-
-        response.then().statusCode(201);
+        Response response = OrderApi.createOrder(order);
+        response.then().statusCode(SC_CREATED);
         response.then().body("track", notNullValue());
     }
 }

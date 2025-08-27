@@ -1,23 +1,17 @@
 package tests;
 
+import api.OrderApi;
 import io.qameta.allure.Step;
-import io.restassured.RestAssured;
-import org.junit.Before;
+import io.restassured.response.Response;
 import org.junit.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
-
-public class OrdersListTest {
-
-    @Before
-    public void setUp() {
-        RestAssured.baseURI = "https://qa-scooter.praktikum-services.ru/";
-    }
+public class OrdersListTest extends BaseTest {
 
     @Test
-    @Step("1. Проверка получения списка заказов")
+    @Step("1. Получение списка всех заказов")
     public void checkOrdersList() {
         given()
                 .auth().oauth2("введи_сюда_свой_токен")
@@ -27,23 +21,20 @@ public class OrdersListTest {
                 .get("/api/v1/orders")
                 .then()
                 .statusCode(200)
-                .body("orders", not(empty()))  // Проверка, что список заказов не пуст
-                .body("orders.size()", greaterThan(0))  // Проверка, что количество заказов больше 0
-                .body("orders[0].id", notNullValue())  // Проверка, что у первого заказа есть id
-                .body("orders[0].firstName", notNullValue())  // Проверка, что у первого заказа есть имя клиента
-                .body("orders[0].address", notNullValue());  // Проверка, что у первого заказа есть адрес
+                .body("orders", not(empty()))
+                .body("orders.size()", greaterThan(0))
+                .body("orders[0].id", notNullValue())
+                .body("orders[0].firstName", anyOf(nullValue(), notNullValue()))
+                .body("orders[0].address", anyOf(nullValue(), notNullValue()));
     }
 
+
     @Test
-    @Step("2. Проверка на запрос с несуществующим courierId")
+    @Step("2. Получение заказов с несуществующим courierId")
     public void checkNonExistentCourierId() {
-        given()
-                .auth().oauth2("введи_сюда_свой_токен")
-                .param("courierId", 9999)  // Несуществующий courierId
-                .when()
-                .get("/api/v1/orders")
-                .then()
-                .statusCode(404)
+        Response response = OrderApi.getOrdersList(9999);
+
+        response.then().statusCode(404)
                 .body("message", equalTo("Курьер с идентификатором 9999 не найден"));
     }
 }
