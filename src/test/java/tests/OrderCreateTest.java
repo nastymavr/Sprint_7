@@ -2,42 +2,54 @@ package tests;
 
 import api.OrderApi;
 import client.Order;
-import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.not;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.hamcrest.Matchers.notNullValue;
 
+@RunWith(Parameterized.class)
 public class OrderCreateTest extends BaseTest {
 
-    @Test
-    @Step("1. Создание заказа с двумя цветами: BLACK и GREY")
-    public void createOrderWithBlackAndGreyColors() {
-        Order order = new Order(
-                "Naruto", "Uchiha", "Konoha, 142 apt.", "4",
-                "+7 800 355 35 35", 5, "2020-06-06",
-                "Saske, come back to Konoha",
-                java.util.List.of("BLACK", "GREY")
-        );
+    private final List<String> colors;
 
-        Response response = OrderApi.createOrder(order);
-        response.then().statusCode(SC_CREATED);
+    public OrderCreateTest(List<String> colors) {
+        this.colors = colors;
+    }
+
+    // Параметры для теста
+    @Parameterized.Parameters(name = "Цвета заказа: {0}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+                { Arrays.asList("BLACK", "GREY") },
+                { Arrays.asList("BLACK") },
+                { Arrays.asList("GREY") },
+                { null } // без цвета
+        });
     }
 
     @Test
-    @Step("5. Проверка, что тело ответа содержит поле track")
-    public void orderResponseContainsTrack() {
+    public void createOrderWithColors() {
         Order order = new Order(
-                "Naruto", "Uchiha", "Konoha, 142 apt.", "4",
-                "+7 800 355 35 35", 5, "2020-06-06",
+                "Naruto",
+                "Uchiha",
+                "Konoha, 142 apt.",
+                "4",
+                "+7 800 355 35 35",
+                5,
+                "2020-06-06",
                 "Saske, come back to Konoha",
-                null
+                colors
         );
 
         Response response = OrderApi.createOrder(order);
-        response.then().statusCode(SC_CREATED);
-        response.then().body("track", notNullValue());
+        response.then().statusCode(SC_CREATED)
+                .body("track", notNullValue());
     }
 }

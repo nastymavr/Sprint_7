@@ -1,7 +1,6 @@
 package tests;
 
 import api.OrderApi;
-import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import org.junit.Test;
 
@@ -11,7 +10,6 @@ import static org.hamcrest.Matchers.*;
 public class OrdersListTest extends BaseTest {
 
     @Test
-    @Step("1. Получение списка всех заказов")
     public void checkOrdersList() {
         given()
                 .auth().oauth2("введи_сюда_свой_токен")
@@ -28,9 +26,7 @@ public class OrdersListTest extends BaseTest {
                 .body("orders[0].address", anyOf(nullValue(), notNullValue()));
     }
 
-
     @Test
-    @Step("2. Получение заказов с несуществующим courierId")
     public void checkNonExistentCourierId() {
         Response response = OrderApi.getOrdersList(9999);
 

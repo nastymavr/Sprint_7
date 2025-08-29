@@ -14,36 +14,56 @@
   </properties>
 
   <dependencies>
+
+    <!-- Allure JUnit4 -->
     <dependency>
       <groupId>io.qameta.allure</groupId>
       <artifactId>allure-junit4</artifactId>
       <version>2.28.1</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- Rest Assured -->
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <version>5.5.5</version>
     </dependency>
+
+    <!-- Allure Rest Assured -->
     <dependency>
       <groupId>io.qameta.allure</groupId>
       <artifactId>allure-rest-assured</artifactId>
       <version>2.29.1</version>
     </dependency>
+
+    <!-- Faker -->
     <dependency>
       <groupId>com.github.javafaker</groupId>
       <artifactId>javafaker</artifactId>
       <version>1.0.2</version>
     </dependency>
+
+    <!-- Gson -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.10.1</version>
     </dependency>
+
+    <!-- Lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.34</version>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
     <plugins>
+      <!-- Surefire -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -64,6 +84,7 @@
         </configuration>
       </plugin>
 
+      <!-- Allure Maven -->
       <plugin>
         <groupId>io.qameta.allure</groupId>
         <artifactId>allure-maven</artifactId>
